@@ -1,7 +1,3 @@
-u understood me wrong
-markdown
-
-```markdown
 # Legal Q&A — RAG-based Indian Court Case Search
 
 Ask natural language questions about real Indian court cases and get accurate answers instantly.
@@ -34,36 +30,3 @@ Built with FAISS, Ollama, sentence-transformers and Flask.
 - Cyber fraud case
 
 ## Setup
-
-Install dependencies:
-```
-
-pip install sentence-transformers faiss-cpu requests flask
-
-```
-
-Pull the LLM:
-```
-
-ollama pull qwen2.5:3b
-
-```
-
-Add court documents as .txt files inside docs/ folder.
-
-Build the index:
-```
-
-python chatbot.py
-
-```
-
-Start the web app:
-```
-
-python app.py
-
-```
-
-Open http://localhost:5000
-```
