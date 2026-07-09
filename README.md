@@ -30,8 +30,12 @@ Built with FAISS, Ollama, sentence-transformers and Flask.
 - Cyber fraud case
 
 ## Setup
+
+\```
 pip install sentence-transformers faiss-cpu requests flask
 ollama pull qwen2.5:3b
 python chatbot.py
 python app.py
-http://localhost:5000
+\```
+
+Open http://localhost:5000
