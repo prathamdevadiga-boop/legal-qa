@@ -1,41 +1,54 @@
-# Legal Q&A — RAG-based Indian Court Case Search
+Legal Q&A
 
-Ask natural language questions about real Indian court cases and get accurate answers instantly.
+A RAG-based (Retrieval-Augmented Generation) Q&A system for Indian legal/court documents. Ask a question, and it retrieves the most relevant chunks from the loaded case documents and uses a local LLM to generate an answer grounded in that context.
 
-Built with FAISS, Ollama, sentence-transformers and Flask.
+How it works
+Court case documents are pre-processed and embedded using sentence-transformers (all-MiniLM-L6-v2)
+Embeddings are stored and searched using FAISS for fast similarity search
+On a question, the top matching chunks are retrieved and passed as context to Ollama (running qwen2.5:3b locally) to generate a grounded answer
+Served via a FastAPI backend with a simple web UI
+Tech stack
+FastAPI + Uvicorn
+FAISS (vector search)
+sentence-transformers
+Ollama (local LLM inference)
+Docker
+Running locally (without Docker)
 
-## Demo
-- Ask "Who is the petitioner in the Kerala High Court case?"
-- Ask "What did the court direct the bank to do?"
-- Ask "What was the defamation case about?"
+Prerequisites: Python 3.11, Ollama installed and running with the qwen2.5:3b model pulled (ollama pull qwen2.5:3b).
 
-## How it works
-1. Indian court documents are loaded from the `docs/` folder
-2. Text is chunked into 200-word pieces with overlap
-3. Each chunk is embedded using `all-MiniLM-L6-v2`
-4. Embeddings are stored in a FAISS vector index
-5. On each query, top-3 relevant chunks are retrieved
-6. Chunks are passed as context to Qwen2.5:3b running locally via Ollama
-7. Flask serves a dark-themed web UI with suggestion chips
+python -m venv venv
+venv\Scripts\activate # Windows
+pip install -r requirements.txt
+python main.py
 
-## Tech stack
-- `sentence-transformers` — text embeddings
-- `faiss-cpu` — vector similarity search
-- `ollama` — local LLM inference (100% offline, no API key needed)
-- `flask` — web interface
+Then open http://localhost:8000
 
-## Cases loaded
-- Cybercrime defamation case — Bengaluru
-- Kerala High Court bank account freeze case (2026)
-- Cyber fraud case
+Running with Docker
 
-## Setup
+Prerequisite: Ollama running on your host machine with qwen2.5:3b pulled.
 
-\```
-pip install sentence-transformers faiss-cpu requests flask
-ollama pull qwen2.5:3b
-python chatbot.py
-python app.py
-\```
+docker build -t legal-qa .
+docker run -p 8000:8000 -e OLLAMA_HOST=http://host.docker.internal:11434 legal-qa
 
-Open http://localhost:5000
+Then open http://localhost:8000
+
+Note: OLLAMA_HOST is set to host.docker.internal because inside a Docker container, localhost refers to the container itself, not your host machine where Ollama is running.
+
+Project structure
+
+legal-qa/
+
+main.py — FastAPI app (entry point used by Docker)
+app.py — Earlier Flask version (not used in the current Docker setup)
+templates/ — HTML frontend
+index.faiss — Pre-built FAISS vector index
+chunks.pkl — Corresponding text chunks for the index
+requirements.txt
+Dockerfile
+Status / Roadmap
+ RAG pipeline with FAISS + sentence-transformers
+ FastAPI backend
+ Dockerized deployment
+ Court Case Summarizer feature
+ Source citations in answers
