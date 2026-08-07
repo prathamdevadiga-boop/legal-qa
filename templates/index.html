@@ -1,65 +1,127 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Legal Q&A</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', sans-serif; background: #0a0a0f; color: #eee; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
-    .container { width: 100%; max-width: 750px; }
-    .header { margin-bottom: 32px; }
-    .header h1 { font-size: 26px; font-weight: 600; color: #fff; margin-bottom: 6px; }
-    .header p { color: #666; font-size: 14px; }
-    .badge { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #1a1a3e; color: #818cf8; border: 1px solid #2d2d6e; margin-bottom: 16px; }
-    .input-row { display: flex; gap: 10px; margin-bottom: 24px; }
-    input { flex: 1; padding: 14px 16px; font-size: 15px; border-radius: 10px; border: 1px solid #222; background: #111; color: #fff; outline: none; }
-    input:focus { border-color: #4f46e5; }
-    button { padding: 14px 24px; background: #4f46e5; color: white; border: none; border-radius: 10px; font-size: 15px; cursor: pointer; white-space: nowrap; }
-    button:hover { background: #4338ca; }
-    .answer-box { background: #111; border: 1px solid #222; border-radius: 10px; padding: 20px; min-height: 100px; font-size: 15px; line-height: 1.8; color: #ccc; }
-    .answer-label { font-size: 11px; color: #444; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
-    .thinking { color: #4f46e5; font-style: italic; }
-    .suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-    .suggestion { font-size: 12px; padding: 6px 12px; border-radius: 20px; border: 1px solid #222; color: #888; cursor: pointer; background: #111; }
-    .suggestion:hover { border-color: #4f46e5; color: #818cf8; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+    
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; border-bottom: 1px solid #1e293b; }
+    nav h1 { font-size: 20px; font-weight: 600; color: #f8fafc; }
+    .badge { background: #1e3a5f; color: #60a5fa; padding: 6px 12px; border-radius: 20px; font-size: 12px; }
+
+    .container { max-width: 800px; margin: 60px auto; padding: 0 24px; }
+    h2 { font-size: 32px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+    .subtitle { text-align: center; color: #94a3b8; margin-bottom: 40px; }
+
+    .search-box { display: flex; gap: 12px; margin-bottom: 16px; }
+    input { flex: 1; background: #1e293b; border: 1px solid #334155; color: #f8fafc; padding: 14px 18px; border-radius: 10px; font-size: 16px; outline: none; }
+    input:focus { border-color: #3b82f6; }
+    button { background: #3b82f6; color: white; border: none; padding: 14px 24px; border-radius: 10px; font-size: 16px; cursor: pointer; }
+    button:hover { background: #2563eb; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 40px; }
+    .chip { background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 6px 14px; border-radius: 20px; font-size: 13px; cursor: pointer; }
+    .chip:hover { border-color: #3b82f6; color: #60a5fa; }
+
+    .spinner { text-align: center; padding: 40px; color: #60a5fa; display: none; }
+
+    .answer-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 24px; margin-bottom: 24px; display: none; }
+    .answer-card h3 { color: #60a5fa; margin-bottom: 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+    .answer-text { line-height: 1.7; color: #e2e8f0; }
+
+    .sources h3 { color: #60a5fa; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: none; }
+    .source-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 14px 18px; margin-bottom: 10px; }
+    .source-title { font-size: 14px; font-weight: 500; color: #f8fafc; margin-bottom: 4px; }
+    .source-meta { font-size: 12px; color: #64748b; }
+
+    .powered { text-align: center; margin-top: 60px; color: #334155; font-size: 12px; }
   </style>
 </head>
 <body>
+  <nav>
+    <h1>⚖️ Legal Q&A</h1>
+    <span class="badge">Powered by Indian Kanoon</span>
+  </nav>
+
   <div class="container">
-    <div class="header">
-      <span class="badge">⚖️ Powered by RAG + Ollama</span>
-      <h1>Legal Document Q&A</h1>
-      <p>Ask questions about loaded Indian court cases</p>
-    </div>
-    <div class="suggestions">
-      <span class="suggestion" onclick="ask('Who is the petitioner in the Kerala High Court case?')">Who is the petitioner?</span>
-      <span class="suggestion" onclick="ask('What did the court direct the bank to do?')">Court directions to bank</span>
-      <span class="suggestion" onclick="ask('What was the defamation case about?')">Defamation case</span>
-      <span class="suggestion" onclick="ask('What is the accused charged with?')">Charges against accused</span>
-    </div>
-    <div class="input-row">
-      <input type="text" id="question" placeholder="Ask a question about the court cases..."/>
+    <h2>Legal Document Q&A</h2>
+    <p class="subtitle">Ask questions about Indian court cases in plain English</p>
+
+    <div class="search-box">
+      <input type="text" id="question" placeholder="e.g. What are bail conditions in a murder case?" />
       <button onclick="ask()">Ask</button>
     </div>
-    <div class="answer-label">Answer</div>
-    <div class="answer-box" id="answer">Your answer will appear here...</div>
+
+    <div class="chips">
+      <span class="chip" onclick="setQ('Bail conditions in murder case')">Bail conditions in murder case</span>
+      <span class="chip" onclick="setQ('Charges against accused')">Charges against accused</span>
+      <span class="chip" onclick="setQ('Court directions to bank')">Court directions to bank</span>
+      <span class="chip" onclick="setQ('Defamation case ruling')">Defamation case ruling</span>
+    </div>
+
+    <div class="spinner" id="spinner">⏳ Searching Indian court cases...</div>
+
+    <div class="answer-card" id="answerCard">
+      <h3>Answer</h3>
+      <p class="answer-text" id="answerText"></p>
+    </div>
+
+    <div class="sources">
+      <h3 id="sourcesTitle">Sources</h3>
+      <div id="sourcesList"></div>
+    </div>
+
+    <p class="powered">Powered by Indian Kanoon · RAG · Ollama · Elasticsearch</p>
   </div>
+
   <script>
-    async function ask(prefill) {
-      const input = document.getElementById("question");
-      if (prefill) input.value = prefill;
-      const q = input.value;
-      if (!q) return;
-      document.getElementById("answer").innerHTML = '<span class="thinking">Thinking...</span>';
-      const res = await fetch("/ask", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({question: q})
-      });
-      const data = await res.json();
-      document.getElementById("answer").innerText = data.answer;
+    function setQ(q) {
+      document.getElementById('question').value = q;
     }
-    document.getElementById("question").addEventListener("keypress", function(e) {
-      if (e.key === "Enter") ask();
+
+    async function ask() {
+      const q = document.getElementById('question').value.trim();
+      if (!q) return;
+
+      document.getElementById('spinner').style.display = 'block';
+      document.getElementById('answerCard').style.display = 'none';
+      document.getElementById('sourcesTitle').style.display = 'none';
+      document.getElementById('sourcesList').innerHTML = '';
+
+      try {
+        const res = await fetch('/ask', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({question: q})
+        });
+        const data = await res.json();
+
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('answerCard').style.display = 'block';
+        document.getElementById('answerText').textContent = data.answer;
+
+        if (data.sources && data.sources.length > 0) {
+          document.getElementById('sourcesTitle').style.display = 'block';
+          data.sources.forEach(s => {
+            document.getElementById('sourcesList').innerHTML += `
+              <div class="source-card">
+                <div class="source-title">${s.title}</div>
+                <div class="source-meta">${s.court} · ${s.date}</div>
+              </div>`;
+          });
+        }
+      } catch (e) {
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('answerText').textContent = 'Error connecting to server.';
+        document.getElementById('answerCard').style.display = 'block';
+      }
+    }
+
+    document.getElementById('question').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') ask();
     });
   </script>
 </body>

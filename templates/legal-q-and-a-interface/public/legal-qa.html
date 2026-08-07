@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Q&A - Indian Kanoon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a2744 100%);
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            color: #60a5fa;
+            font-weight: 500;
+        }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            background: #3b82f6;
+            border-radius: 50%;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Search Section */
+        .search-section {
+            margin-bottom: 3rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .search-input-wrapper {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #64748b;
+        }
+
+        .search-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            min-width: 120px;
+        }
+
+        .search-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .search-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .search-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Suggested Questions */
+        .suggested-questions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .question-chip {
+            padding: 0.75rem 1.25rem;
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            color: #93c5fd;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .question-chip:hover {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(59, 130, 246, 0.2);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Answer Section */
+        .answer-section {
+            margin-bottom: 2rem;
+            display: none;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .answer-section.show {
+            display: block;
+        }
+
+        .answer-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .answer-label {
+            font-size: 0.875rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .answer-text {
+            font-size: 1.0625rem;
+            line-height: 1.8;
+            color: #e2e8f0;
+            letter-spacing: 0.3px;
+        }
+
+        /* Sources Section */
+        .sources-section {
+            display: none;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .sources-section.show {
+            display: block;
+        }
+
+        .sources-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 1.5rem;
+        }
+
+        .sources-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+
+        .source-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .source-card:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            background: rgba(30, 41, 59, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .source-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #93c5fd;
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .source-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: #94a3b8;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .source-court {
+            font-weight: 500;
+        }
+
+        .source-date {
+            color: #64748b;
+        }
+
+        /* Error State */
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .navbar-title {
+                font-size: 1.25rem;
+            }
+
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .search-input-wrapper {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .search-btn {
+                width: 100%;
+            }
+
+            .suggested-questions {
+                gap: 0.75rem;
+            }
+
+            .question-chip {
+                padding: 0.625rem 1rem;
+                font-size: 0.8125rem;
+            }
+
+            .answer-card {
+                padding: 1.5rem;
+            }
+
+            .answer-text {
+                font-size: 1rem;
+            }
+
+            .sources-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .source-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar-badge {
+                font-size: 0.75rem;
+                padding: 0.375rem 0.75rem;
+            }
+
+            .search-input {
+                padding: 0.875rem 1rem;
+                font-size: 0.9375rem;
+            }
+
+            .suggested-questions {
+                flex-wrap: wrap;
+            }
+
+            .question-chip {
+                flex: 0 0 auto;
+                max-width: calc(50% - 0.375rem);
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            color: #64748b;
+            padding: 3rem 1.5rem;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-text {
+            font-size: 1.125rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-title">Legal Q&A</div>
+        <div class="navbar-badge">
+            <div class="badge-dot"></div>
+            Powered by Indian Kanoon
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Search Section -->
+        <div class="search-section">
+            <div class="search-input-wrapper">
+                <input
+                    type="text"
+                    class="search-input"
+                    id="searchInput"
+                    placeholder="Ask your legal question... e.g., 'What are bail conditions in murder cases?'"
+                    autocomplete="off"
+                />
+                <button class="search-btn" id="searchBtn">Search</button>
+            </div>
+
+            <!-- Suggested Questions -->
+            <div class="suggested-questions">
+                <div class="question-chip" data-question="What are bail conditions in murder case?">
+                    Bail conditions in murder case
+                </div>
+                <div class="question-chip" data-question="What charges can be against accused?">
+                    Charges against accused
+                </div>
+                <div class="question-chip" data-question="What are court directions to bank?">
+                    Court directions to bank
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage"></div>
+
+        <!-- Answer Section -->
+        <div class="answer-section" id="answerSection">
+            <div class="answer-card">
+                <div class="answer-label">Answer</div>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+
+        <!-- Sources Section -->
+        <div class="sources-section" id="sourcesSection">
+            <div class="sources-title">Sources & References</div>
+            <div class="sources-grid" id="sourcesGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const answerSection = document.getElementById('answerSection');
+        const answerText = document.getElementById('answerText');
+        const sourcesSection = document.getElementById('sourcesSection');
+        const sourcesGrid = document.getElementById('sourcesGrid');
+        const errorMessage = document.getElementById('errorMessage');
+        const questionChips = document.querySelectorAll('.question-chip');
+
+        // Handle search button click
+        searchBtn.addEventListener('click', performSearch);
+
+        // Handle enter key in search input
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Handle suggested question chips
+        questionChips.forEach((chip) => {
+            chip.addEventListener('click', () => {
+                const question = chip.getAttribute('data-question');
+                searchInput.value = question;
+                performSearch();
+            });
+        });
+
+        async function performSearch() {
+            const question = searchInput.value.trim();
+
+            if (!question) {
+                showError('Please enter a question');
+                return;
+            }
+
+            // Clear previous results and errors
+            errorMessage.classList.remove('show');
+            answerSection.classList.remove('show');
+            sourcesSection.classList.remove('show');
+
+            // Show loading state
+            searchBtn.disabled = true;
+            searchBtn.innerHTML = '<span class="spinner"></span>';
+
+            try {
+                const response = await fetch('http://localhost:8000/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Display answer
+                if (data.answer) {
+                    answerText.textContent = data.answer;
+                    answerSection.classList.add('show');
+                }
+
+                // Display sources
+                if (data.sources && data.sources.length > 0) {
+                    renderSources(data.sources);
+                    sourcesSection.classList.add('show');
+                }
+
+                // Focus on results
+                setTimeout(() => {
+                    answerSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Unable to fetch answer. Please check the server connection and try again.');
+            } finally {
+                // Reset button state
+                searchBtn.disabled = false;
+                searchBtn.textContent = 'Search';
+            }
+        }
+
+        function renderSources(sources) {
+            sourcesGrid.innerHTML = '';
+
+            sources.forEach((source) => {
+                const card = document.createElement('div');
+                card.className = 'source-card';
+
+                const title = document.createElement('div');
+                title.className = 'source-title';
+                title.textContent = source.title || source.case_title || 'Untitled Source';
+
+                const meta = document.createElement('div');
+                meta.className = 'source-meta';
+
+                const court = document.createElement('span');
+                court.className = 'source-court';
+                court.textContent = source.court || 'Court Name';
+
+                const date = document.createElement('span');
+                date.className = 'source-date';
+                date.textContent = source.date || source.year || 'Date not available';
+
+                meta.appendChild(court);
+                meta.appendChild(date);
+
+                card.appendChild(title);
+                card.appendChild(meta);
+
+                sourcesGrid.appendChild(card);
+            });
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+        }
+
+        // Focus search input on page load
+        window.addEventListener('load', () => {
+            searchInput.focus();
+        });
+    </script>
+</body>
+</html>
