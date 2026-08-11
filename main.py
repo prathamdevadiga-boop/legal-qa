@@ -1,5 +1,6 @@
 import os
 import requests
+from logger import log_query
 from bs4 import BeautifulSoup
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
@@ -106,4 +107,5 @@ async def ask(question: Question):
         return {"answer": "No relevant documents found.", "sources": []}
     answer = ask_ollama(question.question, results)
     sources = [{"title": d["title"], "court": d["court"], "date": d["date"]} for d in results]
+    log_query(question.question, answer, sources)
     return {"answer": answer, "sources": sources}
