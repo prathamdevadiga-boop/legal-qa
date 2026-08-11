@@ -129,9 +129,9 @@ legal-qa/
 - [x] Elasticsearch document indexing
 - [x] RAG pipeline with source citations
 - [x] Dark theme web UI
+- [x] Query logging for auditability
 - [ ] Structured case summarizer (facts, issues, laws, decision)
 - [ ] Docker Compose — single command setup
-- [ ] Query logging for auditability
 - [ ] Hybrid retrieval (keyword + semantic)
 - [ ] Structure‑aware chunking by section/paragraph
 
