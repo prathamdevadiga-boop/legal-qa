@@ -15,11 +15,11 @@ app = FastAPI(title="Legal Q&A API", description="RAG-based Indian court case se
 templates = Jinja2Templates(directory="templates")
 
 # clients
-es = Elasticsearch("http://localhost:9200")
+ES_HOST = os.environ.get("ES_HOST", "http://localhost:9200")
+es = Elasticsearch(ES_HOST)
 OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 IK_TOKEN = os.environ.get("INDIANKANOON_API_TOKEN")
 INDEX_NAME = "legal_docs"
-
 def ensure_index():
     try:
         if not es.indices.exists(index=INDEX_NAME):
